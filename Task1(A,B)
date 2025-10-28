@@ -1,0 +1,75 @@
+# Task 1A
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import plotly.express as px
+
+df = px.data.flights()
+print("Task 1A - Flights Data\n")
+print(df.head(1))
+
+df.to_csv("flights.csv", index=False)
+print(np.loadtxt("flights.csv", delimiter=",", skiprows=1, dtype=str)[:1])
+print(np.genfromtxt("flights.csv", delimiter=",", skip_header=1, dtype=str)[:1])
+
+df["Flight_ID"] = df["year"].astype(str) + df["month"].astype(str)
+print(df[df["Flight_ID"] == "195001"])
+
+print(df["origin"].nunique())
+print(df["dest"].nunique())
+
+print(df.loc[(df["air_time"] >= 200) & (df["air_time"] <= 400), "flight"])
+
+df["Booking_Date"] = pd.to_datetime("1950-01-01") + pd.to_timedelta(df.index, unit="D")
+df["Travelled_Date"] = df["Booking_Date"] + pd.to_timedelta(df["air_time"].fillna(0), unit="m")
+
+df["Booking_Lead_Time"] = (df["Travelled_Date"] - df["Booking_Date"]).dt.days
+print(df[["flight", "Booking_Lead_Time"]].head())
+
+plt.figure(figsize=(8,4))
+plt.hist(df["Booking_Lead_Time"], bins=20)
+plt.title("Distribution of Booking Lead Time")
+plt.xlabel("Days")
+plt.ylabel("Frequency")
+plt.show()
+
+# Task 1B
+import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({
+    "StudentID": range(1, 11),
+    "Name": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+    "Age": [15, 16, 15, 17, 16, 15, 16, 17, 15, 16],
+    "Math_Score": [80, 90, np.nan, 70, 85, np.nan, 75, 95, 88, np.nan],
+    "English_Score": [78, np.nan, 82, 85, np.nan, 80, 88, 90, 84, 86],
+    "Science_Score": [np.nan, 92, 85, 87, 90, 88, np.nan, 91, 89, 84]
+})
+
+print("\nTask 1B - Student Grades Data\n")
+print(df.head())
+odf = df.copy()
+print(df.tail())
+print(df.isnull().sum())
+print("\nMissing values per column:", df.isnull().sum())
+print("\nSummary statistics:", df.describe())
+print("\nUnique ages:", df['Age'].unique())
+
+mask_math = df['Math_Score'].isna()
+mask_english = df['English_Score'].isna()
+mask_science = df['Science_Score'].isna()
+
+df['Math_Score'] = df['Math_Score'].fillna(df['Math_Score'].mean())
+df['English_Score'] = df['English_Score'].fillna(df['English_Score'].mean())
+df['Science_Score'] = df['Science_Score'].fillna(df['Science_Score'].mean())
+
+print("\n✅ Updated values:")
+print("\nMath_Score filled:")
+print(df.loc[mask_math, ['StudentID', 'Math_Score']])
+print("\nEnglish_Score filled:")
+print(df.loc[mask_english, ['StudentID', 'English_Score']])
+print("\nScience_Score filled:")
+print(df.loc[mask_science, ['StudentID', 'Science_Score']])
+
+df['Total_Score'] = df['Math_Score'] + df['English_Score'] + df['Science_Score']
+print("\nTotal Score:\n", df[['StudentID', 'Total_Score']])
