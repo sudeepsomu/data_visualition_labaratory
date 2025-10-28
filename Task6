@@ -1,0 +1,56 @@
+import networkx as nx
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+nodes_df = pd.DataFrame({
+    'name': ['A', 'B', 'C', 'D', 'E', 'F'],
+    'color': ['red', 'green', 'blue', 'orange', 'purple', 'cyan'],
+    'size': [3, 4, 2, 5, 3.5, 4.5]
+}).set_index('name')
+
+edges_df = pd.DataFrame({
+    'source': ['A', 'A', 'B', 'C', 'D', 'E', 'F', 'B'],
+    'target': ['B', 'C', 'D', 'E', 'F', 'A', 'C', 'F'],
+    'weight': [2, 3, 1, 2, 3, 2, 1, 2],
+    'type': ['gray', 'gray', 'black', 'gray', 'black', 'black', 'gray', 'gray']
+})
+
+G = nx.from_pandas_edgelist(edges_df, source='source', target='target')
+node_attributes = nodes_df.to_dict('index')
+nx.set_node_attributes(G, node_attributes)
+
+print("Graph created with nodes and edges:")
+print(f"Number of nodes: {G.number_of_nodes()}")
+print(f"Number of edges: {G.number_of_edges()}")
+
+degree_centrality = nx.degree_centrality(G)
+betweenness_centrality = nx.betweenness_centrality(G)
+
+print("\nDegree Centrality:")
+print(degree_centrality)
+
+print("\nBetweenness Centrality:")
+print(betweenness_centrality)
+
+nodes_df['degree_centrality'] = nodes_df.index.map(degree_centrality)
+nodes_df['betweenness_centrality'] = nodes_df.index.map(betweenness_centrality)
+print("\nNodes data with centrality measures:")
+print(nodes_df)
+
+pos = nx.spring_layout(G, seed=42)
+nodes_in_pos = list(pos.keys())
+node_colors = np.array(nodes_df.loc[nodes_in_pos, 'color'].to_list())
+node_sizes = np.array((nodes_df.loc[nodes_in_pos, 'size'] * 100).to_list(), dtype=float)
+edge_widths = edges_df['weight'] * 0.5
+edge_colors = np.array(edges_df['type'].to_list())
+
+plt.figure(figsize=(5, 5))
+nx.draw(G, pos,
+        with_labels=True,
+        node_size=node_sizes,
+        node_color=node_colors,
+        edge_color=edge_colors,
+        width=edge_widths)
+plt.title("Graph Visualization with Node and Edge Attributes")
+plt.show()
