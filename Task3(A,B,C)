@@ -1,0 +1,136 @@
+# Task 3A
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from statsmodels.graphics.mosaicplot import mosaic
+import numpy as np
+
+df1 = pd.DataFrame({
+    "Employee_ID": range(1, 21),
+    "Gender": np.random.choice(["Male", "Female"], 20),
+    "Department": np.random.choice(["HR", "Finance", "IT", "Marketing"], 20),
+    "Job_Level": np.random.choice(["Junior", "Mid", "Senior"], 20),
+    "Education_Level": np.random.choice(["Graduate", "Postgraduate", "PhD"], 20),
+    "Promotion_Status": np.random.choice(["Promoted", "Not Promoted"], 20)
+})
+
+print("Task 3A - Employee Dataset\n")
+print(df1.head())
+print(df1.describe(include="object"))
+print("\nUnique Departments:", df1["Department"].unique())
+print("Unique Promotion Status:", df1["Promotion_Status"].unique())
+
+crosstab = pd.crosstab(df1["Gender"], df1["Promotion_Status"])
+crosstab.plot(kind="bar", stacked=True, figsize=(6,4), colormap="viridis")
+plt.title("Stacked Bar: Gender vs Promotion Status")
+plt.ylabel("Count")
+plt.show()
+
+crosstab.plot(kind="bar", stacked=False, figsize=(6,4), colormap="Set2")
+plt.title("Grouped Bar: Gender vs Promotion Status")
+plt.ylabel("Count")
+plt.show()
+
+seg_ct = pd.crosstab(df1["Department"], df1["Job_Level"], normalize="index")
+seg_ct.plot(kind="bar", stacked=True, figsize=(7,4), colormap="plasma")
+plt.title("Segmented Bar: Department vs Job Level")
+plt.ylabel("Proportion")
+plt.show()
+
+plt.figure(figsize=(8,6))
+mosaic(df1, ["Education_Level", "Promotion_Status"])
+plt.title("Mosaic Plot: Education vs Promotion Status")
+plt.show()
+
+# Task 3B
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.DataFrame({
+    "Age": np.random.randint(22, 60, 20),
+    "Salary": np.random.randint(30000, 120000, 20),
+    "Experience_Years": np.random.randint(1, 20, 20),
+    "Working_Hours_per_Week": np.random.randint(30, 60, 20),
+    "Satisfaction_Score": np.random.uniform(1, 5, 20),
+    "Department": np.random.choice(["HR", "Finance", "IT", "Marketing"], 20),
+    "Gender": np.random.choice(["Male", "Female"], 20),
+    "Working_Hours": np.random.randint(35, 55, 20)
+})
+
+print("\nTask 3B - Correlation and Scatter Data\n")
+print(df.head())
+print(df.describe())
+
+x = df["Age"]
+y = df["Salary"]
+plt.scatter(x, y)
+plt.xlabel("Age")
+plt.ylabel("Salary")
+plt.title("Scatter Plot of Age vs Salary")
+plt.show()
+
+continuous_vars = ['Age', 'Salary', 'Experience_Years', 'Working_Hours_per_Week', 'Satisfaction_Score']
+correlation_matrix_pearson = df[continuous_vars].corr(method='pearson')
+correlation_matrix_spearman = df[continuous_vars].corr(method='spearman')
+
+plt.figure(figsize=(8, 6))
+sns.heatmap(correlation_matrix_pearson, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title("Pearson Correlation Heatmap")
+plt.show()
+
+plt.figure(figsize=(8, 6))
+sns.heatmap(correlation_matrix_spearman, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title("Spearman Correlation Heatmap")
+plt.show()
+
+# Task 3C
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+print("\nTask 3C - Distribution and Comparative Analysis\n")
+
+plt.figure(figsize=(10, 6))
+sns.barplot(x='Department', y='Salary', data=df)
+plt.title('Average Salary across Department')
+plt.xlabel('Department')
+plt.ylabel('Average Salary')
+plt.show()
+
+plt.figure(figsize=(8, 6))
+sns.boxplot(x='Gender', y='Satisfaction_Score', data=df)
+plt.title('Satisfaction Score across Gender')
+plt.xlabel('Gender')
+plt.ylabel('Satisfaction Score')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.violinplot(x='Department', y='Working_Hours', data=df)
+plt.title('Working Hours by Department')
+plt.xlabel('Department')
+plt.ylabel('Working Hours')
+plt.show()
+
+plt.figure(figsize=(10, 8))
+for department in df['Department'].unique():
+    sns.kdeplot(data=df[df['Department'] == department], x='Salary', fill=True, label=department)
+plt.title('Ridgeline Plot of Salary by Department')
+plt.xlabel('Salary')
+plt.ylabel('Density')
+plt.legend()
+plt.show()
+
+plt.figure(figsize=(8, 6))
+sns.swarmplot(x='Gender', y='Satisfaction_Score', data=df)
+plt.title('Beeswarm Plot of Satisfaction Score by Gender')
+plt.xlabel('Gender')
+plt.ylabel('Satisfaction Score')
+plt.show()
+
+plt.figure(figsize=(8, 6))
+sns.kdeplot(data=df, x='Age', hue='Gender', fill=True)
+plt.title('Kernel Density Plot of Age by Gender')
+plt.xlabel('Age')
+plt.ylabel('Density')
+plt.show()
