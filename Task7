@@ -1,0 +1,56 @@
+!pip install nltk spacy wordcloud matplotlib
+!python -m spacy download en_core_web_sm
+
+import nltk
+import re
+import spacy
+from nltk.corpus import stopwords
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+from collections import Counter
+from nltk.util import ngrams
+
+texts = [
+    "The cat ran and saw the dog.",
+    "Tom got the big red bag.",
+    "She can win and try now.",
+    "Mahesh Babu's new movie Globe Trotter is trending worldwide.",
+    "Artificial intelligence improves healthcare and automation.",
+    "Natural language processing enables human-like conversation in chatbots."
+]
+
+nltk.download('stopwords')
+nlp = spacy.load("en_core_web_sm")
+
+def preprocess_text(texts):
+    stop_words = set(stopwords.words('english'))
+    cleaned_texts = []
+    for text in texts:
+        text = text.lower()
+        text = re.sub(r'[^a-z\s]', '', text)
+        tokens = [word for word in text.split() if word not in stop_words]
+        doc = nlp(" ".join(tokens))
+        lemmas = [token.lemma_ for token in doc if token.lemma_ not in stop_words]
+        cleaned_texts.append(" ".join(lemmas))
+    return cleaned_texts
+
+cleaned_texts = preprocess_text(texts)
+combined_text = " ".join(cleaned_texts)
+
+wordcloud = WordCloud(width=800, height=400, background_color='white', colormap='viridis').generate(combined_text)
+plt.figure(figsize=(10, 5))
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis('off')
+plt.title("Word Cloud of Sample Texts")
+plt.show()
+
+def get_ngrams(texts, n=2, top_k=15):
+    all_ngrams = []
+    for text in texts:
+        tokens = text.split()
+        all_ngrams.extend(ngrams(tokens, n))
+    return Counter(all_ngrams).most_common(top_k)
+
+print("Top Bigrams:")
+for bigram, freq in get_ngrams(cleaned_texts, n=2):
+    print(f"{bigram}: {freq}")
