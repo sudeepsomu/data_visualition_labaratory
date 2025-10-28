@@ -1,0 +1,57 @@
+# Task 5a
+import pandas as pd
+import plotly.express as px
+
+df = pd.DataFrame({
+    "Category": ["Electronics", "Electronics", "Electronics", "Furniture", "Furniture", "Clothing", "Clothing", "Clothing"],
+    "Subcategory": ["Mobiles", "Mobiles", "Laptops", "Chairs", "Tables", "Men", "Women", "Kids"],
+    "Product": ["iPhone", "Samsung Galaxy", "HP Laptop", "Office Chair", "Dining Table", "Shirt", "Dress", "T-shirt"],
+    "Sales_Amount": [85000, 72000, 95000, 45000, 38000, 12000, 18000, 9000]
+})
+
+print("\nDataset Preview:")
+print(df.head())
+print("\nDataset Info:")
+print(df.info())
+
+fig_treemap = px.treemap(
+    df,
+    path=["Category", "Subcategory", "Product"],
+    values="Sales_Amount",
+    color="Category",
+    title="Treemap of Sales by Category → Subcategory → Product"
+)
+fig_treemap.show()
+
+fig_sunburst = px.sunburst(
+    df,
+    path=["Category", "Subcategory", "Product"],
+    values="Sales_Amount",
+    color="Category",
+    title="Sunburst Chart of Sales by Category → Subcategory → Product"
+)
+fig_sunburst.show()
+
+# Task 5b
+df2 = pd.DataFrame({
+    "Company": ["TechCorp", "TechCorp", "TechCorp", "BuildWell", "BuildWell", "HealthPlus", "HealthPlus", "EduSmart"],
+    "Division": ["Software", "Software", "Hardware", "Construction", "Construction", "Research", "Research", "Training"],
+    "Team": ["AI Team", "Web Dev", "Device Team", "Civil Team", "Electrical", "Lab A", "Lab B", "Faculty"],
+    "Employee_Name": ["John", "Sara", "Mike", "Emma", "Ryan", "Nina", "Leo", "Sophia"],
+    "Salary": [95000, 88000, 91000, 78000, 82000, 97000, 92000, 86000]
+})
+
+print("\nDataset Preview:")
+print(df2.head())
+print("\nDataset Info:")
+print(df2.info())
+
+fig = px.sunburst(
+    df2,
+    path=["Company", "Division", "Team", "Employee_Name"],
+    values="Salary",
+    color="Division",
+    title="Sunburst Chart: Company → Division → Team → Employee (Salary Distribution)"
+)
+fig.update_layout(width=900, height=700)
+fig.show()
