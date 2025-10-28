@@ -1,0 +1,100 @@
+# Task 2A
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+df = pd.DataFrame({
+    "Customer_ID": range(1, 16),
+    "Gender": np.random.choice(["Male", "Female"], 15),
+    "Product_Category": np.random.choice(["Electronics", "Clothing", "Groceries"], 15),
+    "Payment_Mode": np.random.choice(["Credit Card", "Debit Card", "UPI", "Cash"], 15)
+})
+
+print("\nTask 2A - Customer Purchase Data")
+print("\nFirst few records of the dataset:")
+print(df.head())
+
+print("\nProduct Category Counts:")
+prod_counts = df["Product_Category"].value_counts()
+print(prod_counts)
+
+print("\nPayment Mode Counts:")
+pay_counts = df["Payment_Mode"].value_counts()
+print(pay_counts)
+
+plt.figure(figsize=(6,4))
+plt.bar(prod_counts.index, prod_counts.values, color="skyblue")
+plt.title("Product Category Distribution")
+plt.xlabel("Product Category")
+plt.ylabel("Count")
+plt.grid(False)
+plt.show()
+
+plt.figure(figsize=(5,5))
+plt.pie(pay_counts.values, labels=pay_counts.index, autopct="%1.1f%%", startangle=90, colors=plt.cm.Pastel1.colors)
+plt.title("Payment Mode Distribution")
+plt.show()
+
+print("\nCustomers per Gender:")
+gender_counts = df["Gender"].value_counts()
+print(gender_counts)
+
+pd.crosstab(df.Gender, df.Product_Category).plot.bar(
+    figsize=(6,4), color=["black", "orange", "darkorange"]
+)
+plt.title("Gender vs Product Category")
+plt.ylabel("Count")
+plt.tight_layout()
+plt.show()
+
+# Task 2B
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import skew, kurtosis
+from datetime import datetime, timedelta
+
+time_series = [datetime(2024, 1, 1) + timedelta(hours=i) for i in range(20)]
+df = pd.DataFrame({
+    "Time": time_series,
+    "Temperature_C": np.random.uniform(18, 35, 20).round(2),
+    "Humidity_%": np.random.uniform(40, 90, 20).round(2),
+    "Air_Quality_Index": np.random.randint(50, 200, 20)
+})
+
+print("\nTask 2B - Sensor Readings Data")
+print("First 5 rows:")
+print(df.head())
+
+df['Time'] = pd.to_datetime(df['Time'], errors='coerce')
+plt.hist(df["Temperature_C"], bins=10, color='skyblue', edgecolor='black')
+plt.title("Histogram of Temperature (°C)")
+plt.xlabel("Temperature (°C)")
+plt.ylabel("Frequency")
+plt.show()
+
+plt.hist(df["Humidity_%"], bins=10, color='lightgreen', edgecolor='black')
+plt.title("Histogram of Humidity (%)")
+plt.xlabel("Humidity (%)")
+plt.ylabel("Frequency")
+plt.show()
+
+plt.figure(figsize=(10,6))
+plt.plot(df["Time"], df["Temperature_C"], marker='.', color='blue')
+plt.title("Time vs Temperature (°C)")
+plt.xlabel("Time")
+plt.ylabel("Temperature (°C)")
+plt.grid(True)
+plt.show()
+
+plt.scatter(df["Temperature_C"], df["Humidity_%"], color='orange', edgecolors='black')
+plt.title("Temperature (°C) vs Humidity (%)")
+plt.xlabel("Temperature (°C)")
+plt.ylabel("Humidity (%)")
+plt.show()
+
+print("\nSummary Statistics:")
+print(df.describe())
+
+print("\nSkewness of Air_Quality_Index:", skew(df["Air_Quality_Index"]))
+print("Kurtosis of Air_Quality_Index:", kurtosis(df["Air_Quality_Index"]))
