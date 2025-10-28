@@ -1,0 +1,47 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from pandas.plotting import lag_plot, autocorrelation_plot
+
+df_task9 = pd.read_csv('/content/task9.csv')
+
+df_task9['Date'] = pd.to_datetime(df_task9['Date'])
+
+df_task9.set_index('Date', inplace=True)
+
+plt.figure(figsize=(12, 6))
+plt.plot(df_task9['Sales'], label='Sales')
+plt.plot(df_task9['Profit'], label='Profit')
+plt.title('Sales and Profit Over Time')
+plt.xlabel('Date')
+plt.ylabel('Amount')
+plt.legend()
+plt.show()
+
+plt.figure(figsize=(12, 6))
+df_task9['Month'] = df_task9.index.month
+sns.boxplot(x='Month', y='Sales', data=df_task9)
+plt.title('Sales Distribution by Month')
+plt.xlabel('Month')
+plt.ylabel('Sales')
+plt.show()
+df_task9.drop('Month', axis=1, inplace=True)
+plt.figure(figsize=(12, 8))
+df_task9['Year'] = df_task9.index.year
+df_task9['Month'] = df_task9.index.month
+heatmap_data = df_task9.pivot_table(values='Sales', index='Month', columns='Year', aggfunc='mean')
+sns.heatmap(heatmap_data, annot=True, fmt=".0f", cmap="YlGnBu")
+plt.title('Average Sales by Month and Year')
+plt.xlabel('Year')
+plt.ylabel('Month')
+plt.show()
+df_task9.drop(['Year', 'Month'], axis=1, inplace=True)
+plt.figure(figsize=(8, 8))
+lag_plot(df_task9['Sales'])
+plt.title('Lag Plot of Sales')
+plt.show()
+
+plt.figure(figsize=(12, 6))
+autocorrelation_plot(df_task9['Sales'])
+plt.title('Autocorrelation Plot of Sales')
+plt.show()
