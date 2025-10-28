@@ -1,0 +1,61 @@
+# =======================
+# 📍 TASK 8A – FOLIUM MAP
+# =======================
+
+import pandas as pd
+import folium
+from IPython.display import display
+import plotly.express as px
+
+data = {
+    "Team": ["CSK", "MI", "RCB", "KKR", "SRH", "DC"],
+    "City": ["Chennai", "Mumbai", "Bengaluru", "Kolkata", "Hyderabad", "Delhi"],
+    "Country": ["India"] * 6,
+    "Latitude": [13.0827, 19.0760, 12.9716, 22.5726, 17.3850, 28.6139],
+    "Longitude": [80.2707, 72.8777, 77.5946, 88.3639, 78.4867, 77.2090],
+    "Population_Millions": [10.9, 20.4, 12.3, 14.8, 10.0, 16.8]
+}
+
+df = pd.DataFrame(data)
+center_lat = df["Latitude"].mean()
+center_lon = df["Longitude"].mean()
+
+m = folium.Map(location=[center_lat, center_lon], zoom_start=5)
+for _, row in df.iterrows():
+    folium.Marker(
+        location=[row["Latitude"], row["Longitude"]],
+        popup=f"Team: {row['Team']}<br>City: {row['City']}",
+        tooltip=row["Team"]
+    ).add_to(m)
+
+display(m)
+
+
+# ============================
+# 🌍 TASK 8B – GEO PROJECTIONS
+# ============================
+
+common_args = dict(
+    data_frame=df,
+    lat="Latitude",
+    lon="Longitude",
+    color="City",
+    size="Population_Millions",
+    width=1200,
+    height=700
+)
+
+fig1 = px.scatter_geo(projection="mercator", **common_args,
+                      title="Mercator Projection - Indian IPL Cities")
+fig1.update_traces(marker=dict(line=dict(width=1, color='black')))
+fig1.show()
+
+fig2 = px.scatter_geo(projection="robinson", **common_args,
+                      title="Robinson Projection - Indian IPL Cities")
+fig2.update_traces(marker=dict(line=dict(width=1, color='black')))
+fig2.show()
+
+fig3 = px.scatter_geo(projection="equirectangular", **common_args,
+                      title="Equirectangular Projection - Indian IPL Cities")
+fig3.update_traces(marker=dict(line=dict(width=1, color='black')))
+fig3.show()
